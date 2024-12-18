@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BobsBank Security Center</title>
+</head>
+<body>
+    <h1>HQ Back camera Live Feed</h1>
+    <video id="video" autoplay playsinline></video>
+
+    <script>
+        const socket = io.connect(window.location.origin);
+        const video = document.getElementById("video");
+
+        let pc = new RTCPeerConnection();
+
+        // Handle incoming WebRTC answer
+        socket.on("answer", async (data) => {
+            const answer = new RTCSessionDescription(data);
+            await pc.setRemoteDescription(answer);
+        });
+
+        // Set up WebRTC connection
+        async function startStream() {
+            pc.ontrack = (event) => {
+                video.srcObject = event.streams[0];
+            };
+
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+
+            socket.emit("offer", {
+                sdp: pc.localDescription.sdp,
+                type: pc.localDescription.type,
+            });
+        }
+
+        startStream();
+    </script>
+
+    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+</body>
+</html>
