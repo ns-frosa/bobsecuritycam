@@ -1,42 +1,74 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>BobsBank Security Center</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Security Monitoring - Branch 122 Back Camera</title>
+    <style>
+        body {
+            background-color: #2c3e50;
+            color: #ecf0f1;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 20px;
+            background-color: #1a252f;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        header img {
+            height: 50px;
+        }
+        .header-title {
+            flex-grow: 1;
+            display: flex;
+            justify-content: center;
+        }
+        header h1 {
+            margin: 0;
+            font-size: 24px;
+        }
+        main {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex-grow: 1;
+        }
+        .video-container {
+            border: 2px solid #ecf0f1;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #34495e;
+        }
+        img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>HQ Back camera Live Feed</h1>
-    <video id="video" autoplay playsinline></video>
-
-    <script>
-        const socket = io.connect(window.location.origin);
-        const video = document.getElementById("video");
-
-        let pc = new RTCPeerConnection();
-
-        // Handle incoming WebRTC answer
-        socket.on("answer", async (data) => {
-            const answer = new RTCSessionDescription(data);
-            await pc.setRemoteDescription(answer);
-        });
-
-        // Set up WebRTC connection
-        async function startStream() {
-            pc.ontrack = (event) => {
-                video.srcObject = event.streams[0];
-            };
-
-            const offer = await pc.createOffer();
-            await pc.setLocalDescription(offer);
-
-            socket.emit("offer", {
-                sdp: pc.localDescription.sdp,
-                type: pc.localDescription.type,
-            });
-        }
-
-        startStream();
-    </script>
-
-    <script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+    <header>
+        <div class="header-title">
+            <h1>Bobs Bank Security Monitoring Center</h1>
+        </div>
+    </header>
+    <main>
+        <h2>Branch 122 Back Camera</h2>
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}" alt="Branch 122 Back Camera">
+        </div>
+    </main>
 </body>
 </html>
